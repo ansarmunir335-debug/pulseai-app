@@ -29,7 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.error || 'Failed to fetch response');
             }
 
-            loadingDiv.textContent = data.result;
+            // Fixed Response Extraction: Har tarah ke format se response nikalega
+            const botReply = data.result || data.text || data.response || data.choices?.[0]?.message?.content || 'No response';
+            loadingDiv.textContent = botReply;
+
         } catch (error) {
             loadingDiv.textContent = `Error: ${error.message}`;
             loadingDiv.classList.add('error-message');
