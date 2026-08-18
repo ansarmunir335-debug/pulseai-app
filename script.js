@@ -29,12 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.error || 'Failed to fetch response');
             }
 
-            // Fixed Response Extraction: Har tarah ke format se response nikalega
-            const botReply = data.result || data.text || data.response || data.choices?.[0]?.message?.content || 'No response';
-            loadingDiv.textContent = botReply;
+            // Extract reply
+            const botReply = data.text || data.response || data.choices?.[0]?.message?.content || 'No response text';
+            
+            // Text insertion & color styling fix
+            loadingDiv.innerText = botReply;
+            loadingDiv.style.color = '#ffffff';
 
         } catch (error) {
-            loadingDiv.textContent = `Error: ${error.message}`;
+            loadingDiv.innerText = `Error: ${error.message}`;
             loadingDiv.classList.add('error-message');
         } finally {
             input.disabled = false;
@@ -47,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendMessage(text, className) {
         const msgDiv = document.createElement('div');
         msgDiv.classList.add('message', className);
-        msgDiv.textContent = text;
+        msgDiv.innerText = text;
         chatBox.appendChild(msgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
         return msgDiv;
