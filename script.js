@@ -1,58 +1,66 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('prompt-form');
-    const input = document.getElementById('user-input');
-    const chatBox = document.getElementById('chat-box');
-    const sendBtn = document.getElementById('send-btn');
+const chatBox = document.getElementById('chat-box');
+const promptForm = document.getElementById('prompt-form');
+const userInput = document.getElementById('user-input');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const prompt = input.value.trim();
-        if (!prompt) return;
+function appendMessage(text, className) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', className);
+    
+    const textSpan = document.createElement('span');
+    textSpan.classList.add('message-text');
+    textSpan.innerText = text;
+    
+    msgDiv.appendChild(textSpan);
+    chatBox.appendChild(msgDiv);
+    
+    const welcome = document.querySelector('.welcome-container');
+    if (welcome) welcome.style.display = 'none';
 
-        appendMessage(prompt, 'user-message');
-        input.value = '';
-        input.disabled = true;
-        sendBtn.disabled = true;
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return msgDiv;
+}
 
-        const loadingDiv = appendMessage('Thinking...', 'bot-message');
+function showLoadingIndicator() {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', 'bot-message', 'loading-msg');
+    
+    const dotsDiv = document.createElement('div');
+    dotsDiv.classList.add('message-text', 'typing-dots');
+    dotsDiv.innerHTML = '<span></span><span></span><span></span>';
+    
+    msgDiv.appendChild(dotsDiv);
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return msgDiv;
+}
 
-        try {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt })
-            });
+promptForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const prompt = userInput.value.trim();
+    if (!prompt) return;
 
-            const data = await response.json();
+    appendMessage(prompt, 'user-message');
+    userInput.value = '';
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to fetch response');
-            }
+    const loadingIndicator = showLoadingIndicator();
 
-            // Extract reply
-            const botReply = data.text || data.response || data.choices?.[0]?.message?.content || 'No response text';
-            
-            // Text insertion & color styling fix
-            loadingDiv.innerText = botReply;
-            loadingDiv.style.color = '#ffffff';
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
 
-        } catch (error) {
-            loadingDiv.innerText = `Error: ${error.message}`;
-            loadingDiv.classList.add('error-message');
-        } finally {
-            input.disabled = false;
-            sendBtn.disabled = false;
-            input.focus();
-            chatBox.scrollTop = chatBox.scrollHeight;
+        const data = await response.json();
+        loadingIndicator.remove();
+
+        if (response.ok) {
+            appendMessage(data.response, 'bot-message');
+        } else {
+            appendMessage('Error: ' + (data.error || 'Something went wrong'), 'bot-message');
         }
-    });
-
-    function appendMessage(text, className) {
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message', className);
-        msgDiv.innerText = text;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        return msgDiv;
+    } catch (err) {
+        loadingIndicator.remove();
+        appendMessage('Network Error: Please check your connection.', 'bot-message');
     }
 });
