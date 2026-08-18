@@ -17,10 +17,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'GROQ_API_KEY is missing in Vercel settings' });
   }
 
-  // Pehle Vercel ke Environment Variable 'GROQ_MODEL' ko check karega.
-  // Agar wahan koi model na mila toh default 'openai/gpt-oss-20b' use karega.
   const modelName = process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
-
   const { prompt } = req.body || {};
 
   try {
@@ -42,7 +39,16 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data.error?.message || 'Groq API Error' });
     }
 
-    return res.status(200).json(data);
+    // Output extracting for frontend mapping
+    const aiMessage = data.choices?.[0]?.message?.content || 'No response generated.';
+
+    return res.status(200).json({
+      text: aiMessage,
+      response: aiMessage,
+      content: aiMessage,
+      reply: aiMessage,
+      ...data
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
