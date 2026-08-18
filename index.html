@@ -3,29 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseAI</title>
+    <title>PulseAI Assistant</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>PulseAI Assistant</h1>
-            <p>Powered by Groq Llama 3.3</p>
-        </header>
+<body class="light-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand-link">
+                    <img src="logo.png" alt="PulseAI Logo" class="brand-logo-img">
+                    <span>PulseAI</span>
+                </a>
+                <button class="new-chat-btn"><i class="fas fa-plus"></i> New Chat</button>
+            </div>
+            <div class="chat-history"></div>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/32" alt="User">
+                    <span>User Account</span>
+                </div>
+            </div>
+        </aside>
 
-        <main>
-            <div id="chat-box" class="chat-box"></div>
-            
-            <form id="prompt-form" class="input-area">
-                <input 
-                    type="text" 
-                    id="user-input" 
-                    placeholder="Type your message here..." 
-                    required 
-                    autocomplete="off"
-                />
-                <button type="submit" id="send-btn">Send</button>
-            </form>
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="main-header">
+                <div class="header-left">
+                    <span class="model-name">PulseAI Engine</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn"><i class="fas fa-search"></i></button>
+                    <button class="icon-btn"><i class="fas fa-cog"></i></button>
+                </div>
+            </header>
+
+            <div id="chat-box" class="chat-messages">
+                <div class="welcome-container">
+                    <div class="ai-icon-large">
+                        <img src="logo.png" alt="PulseAI Logo" class="welcome-logo-img">
+                    </div>
+                    <h1>What can I help with today?</h1>
+                    <p class="subtitle">Match the vibe, match the language. Powered by PulseAI.</p>
+                </div>
+            </div>
+
+            <footer class="input-area">
+                <form id="prompt-form" class="prompt-form">
+                    <div class="input-wrapper">
+                        <textarea id="user-input" placeholder="Message PulseAI..." rows="1" required></textarea>
+                        <div class="action-buttons">
+                            <button type="submit" id="send-btn" class="send-btn">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="disclaimer">
+                    <span>PulseAI may produce inaccurate info. Verify critical details.</span>
+                </div>
+            </footer>
         </main>
     </div>
 
