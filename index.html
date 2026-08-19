@@ -6,9 +6,40 @@
     <title>PulseAI Assistant</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="app-container">
+
+    <!-- Auth Modal Overlay -->
+    <div class="auth-overlay" id="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="logo.png" alt="PulseAI" class="auth-logo">
+                <h2 id="auth-title">Welcome to PulseAI</h2>
+                <p id="auth-subtitle">Sign in to continue to your account</p>
+            </div>
+            <form id="auth-form">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="auth-email" placeholder="name@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="auth-submit-btn" class="auth-primary-btn">Sign In</button>
+            </form>
+            <div class="auth-footer">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <a href="#" id="auth-toggle-link">Sign Up</a>
+            </div>
+            <p id="auth-error" class="auth-error-msg"></p>
+        </div>
+    </div>
+
+    <!-- Main App Structure -->
+    <div class="app-container" id="app-container" style="display: none;">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-top">
@@ -20,45 +51,41 @@
                     <i class="fa-solid fa-plus"></i> New Chat
                 </button>
             </div>
+
+            <div class="chat-history" id="chat-history-list"></div>
+
             <div class="user-profile">
-                <div class="avatar">P</div>
-                <span>User Account</span>
+                <div class="avatar" id="user-avatar">U</div>
+                <span id="user-email-display">user@email.com</span>
+                <i class="fa-solid fa-right-from-bracket logout-btn" id="logout-btn" title="Log Out"></i>
             </div>
         </aside>
 
-        <!-- Main Chat Section -->
+        <!-- Main Chat Area -->
         <main class="chat-main">
             <header class="chat-header">
                 <h3>PulseAI Engine <i class="fa-solid fa-chevron-down"></i></h3>
-                <div class="header-actions">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <i class="fa-solid fa-gear"></i>
-                </div>
             </header>
 
-            <!-- Chat Messages Container -->
-            <div class="chat-container" id="chat-container">
-                <!-- Messages will appear here dynamically -->
+            <div class="welcome-screen" id="welcome-screen">
+                <img src="logo.png" alt="PulseAI Logo" class="welcome-logo">
+                <h1>What can I help with today?</h1>
             </div>
 
-            <!-- Bottom Input Section -->
+            <div class="chat-container" id="chat-container"></div>
+
             <div class="input-container">
                 <div class="input-wrapper">
                     <input type="text" id="user-input" class="message-input" placeholder="Message PulseAI..." autocomplete="off">
                     
-                    <!-- Active Models Dropdown (Left of Send Button) -->
-                    <!-- Naya Working Code -->
-<select id="model-select" class="model-dropdown">
-    <option value="openai/gpt-oss-120b">GPT OSS 120B (OpenAI Flagship)</option>
-    <option value="openai/gpt-oss-20b">GPT OSS 20B (OpenAI Fast)</option>
-</select>
+                    <select id="model-select" class="model-dropdown">
+                        <option value="openai/gpt-oss-120b">GPT OSS 120B</option>
+                        <option value="openai/gpt-oss-20b">GPT OSS 20B</option>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B</option>
+                    </select>
 
-                    <!-- Send Button -->
-                    <button id="send-btn" class="send-btn purple-btn" title="Send Message">
-                        <i class="fa-solid fa-arrow-up"></i>
-                    </button>
+                    <button id="send-btn" class="send-btn purple-btn"><i class="fa-solid fa-arrow-up"></i></button>
                 </div>
-                <p class="disclaimer">PulseAI may produce inaccurate info. Verify critical details.</p>
             </div>
         </main>
     </div>
