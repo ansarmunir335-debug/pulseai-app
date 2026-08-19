@@ -1,9 +1,9 @@
 // ==========================================
 // 1. CONFIGURATION & STATE MANAGEMENT
 // ==========================================
-const SUPABASE_URL = "https://szxignrsvxfrijulaolp.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY_HERE"; 
-const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE";
+const SUPABASE_URL = "https://szxignrsvxfrijulaolp.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_88fhAVReBj4sWIcT79U02Q_pPCmZYLe"; 
+const GROQ_API_KEY = "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";
 
 // Initialize Supabase SDK
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
