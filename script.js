@@ -1,93 +1,69 @@
-// PulseAI - Fixed Alignment & Clean Loader Script
-const GROQ_API_KEY = "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"; // <-- Apni Groq API Key yahan paste karein
+// Supabase Configuration
+const SUPABASE_URL = "https://szxignrsvxfrijulaolp.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_88fhAVReBj4sWIcT79U02Q_pPCmZYLe";
+const GROQ_API_KEY = "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";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener("DOMContentLoaded", () => {
-    const chatInput = document.getElementById("user-input");
-    const sendBtn = document.getElementById("send-btn");
-    const chatContainer = document.getElementById("chat-container");
-    const modelSelect = document.getElementById("model-select");
-    const newChatBtn = document.getElementById("new-chat-btn");
+    // Auth Elements
+    const authOverlay = document.getElementById("auth-overlay");
+    const appContainer = document.getElementById("app-container");
+    const authForm = document.getElementById("auth-form");
+    const authEmail = document.getElementById("auth-email");
+    const authPassword = document.getElementById("auth-password");
+    const authTitle = document.getElementById("auth-title");
+    const authSubmitBtn = document.getElementById("auth-submit-btn");
+    const authToggleLink = document.getElementById("auth-toggle-link");
+    const authError = document.getElementById("auth-error");
+    const userEmailDisplay = document.getElementById("user-email-display");
+    const userAvatar = document.getElementById("user-avatar");
+    const logoutBtn = document.getElementById("logout-btn");
 
-    async function sendMessage() {
-        const messageText = chatInput.value.trim();
-        if (!messageText) return;
+    let isSignUpMode = false;
 
-        // 1. User Message Display (Right Aligned)
-        appendMessage(messageText, "user");
-        chatInput.value = "";
+    // Toggle Login / SignUp View
+    authToggleLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        isSignUpMode = !isSignUpMode;
+        authTitle.innerText = isSignUpMode ? "Create Account" : "Welcome to PulseAI";
+        authSubmitBtn.innerText = isSignUpMode ? "Sign Up" : "Sign In";
+        authToggleLink.innerText = isSignUpMode ? "Sign In" : "Sign Up";
+        authError.innerText = "";
+    });
 
-        // 2. AI Temporary "Thinking..." Bubble (Left Aligned)
-        const loadingDiv = document.createElement("div");
-        loadingDiv.className = "message bot-message thinking-bubble";
-        loadingDiv.innerText = "Thinking...";
-        chatContainer.appendChild(loadingDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+    // Handle Form Submit (SignUp / LogIn)
+    authForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        authError.innerText = "";
+        const email = authEmail.value.trim();
+        const password = authPassword.value.trim();
 
-        let selectedModel = modelSelect ? modelSelect.value : "llama-3.1-8b-instant";
-
-        try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${GROQ_API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    messages: [
-                        { role: "system", content: "You are PulseAI, a helpful assistant. Reply in Roman Urdu or English as requested." },
-                        { role: "user", content: messageText }
-                    ],
-                    model: selectedModel
-                })
-            });
-
-            const data = await response.json();
-
-            // 3. Delete "Thinking..." Bubble completely
-            loadingDiv.remove();
-
-            if (!response.ok) {
-                throw new Error(data.error?.message || `Status: ${response.status}`);
-            }
-
-            // 4. Display AI Response below User message
-            const botReply = data.choices[0]?.message?.content || "No response received.";
-            appendMessage(botReply, "bot");
-
-        } catch (error) {
-            console.error("PulseAI API Error:", error);
-            // Remove loader and show clean error message
-            loadingDiv.remove();
-            appendMessage(`Error: ${error.message}`, "bot");
+        if (isSignUpMode) {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) authError.innerText = error.message;
+            else alert("Account created! Check email for verification link if enabled.");
+        } else {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) authError.innerText = error.message;
         }
-    }
+    });
 
-    function appendMessage(text, sender) {
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `message ${sender}-message`;
-        msgDiv.innerText = text;
-
-        if (chatContainer) {
-            chatContainer.appendChild(msgDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+    // Check Active Auth Session
+    supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+            authOverlay.style.display = "none";
+            appContainer.style.display = "flex";
+            userEmailDisplay.innerText = session.user.email;
+            userAvatar.innerText = session.user.email.charAt(0).toUpperCase();
+        } else {
+            authOverlay.style.display = "flex";
+            appContainer.style.display = "none";
         }
-    }
+    });
 
-    // Event Listeners
-    if (sendBtn) sendBtn.addEventListener("click", sendMessage);
-
-    if (chatInput) {
-        chatInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-    }
-
-    if (newChatBtn) {
-        newChatBtn.addEventListener("click", () => {
-            if (chatContainer) chatContainer.innerHTML = "";
-        });
-    }
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+    });
 });
