@@ -1,6 +1,6 @@
 // PulseAI Fresh Clean Script
 
-const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE"; // Apni Groq API key (gsk_...) yahan paste karein
+const GROQ_API_KEY = "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"; // Apni Groq API key (gsk_...) yahan paste karein
 const MODEL_NAME = "llama-3.3-70b-versatile"; 
 
 document.addEventListener("DOMContentLoaded", () => {
