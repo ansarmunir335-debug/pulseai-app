@@ -11,20 +11,22 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="brand">
-                <img src="logo.png" alt="PulseAI Logo" class="brand-logo">
-                <h2>PulseAI</h2>
+            <div class="sidebar-top">
+                <div class="brand">
+                    <img src="logo.png" alt="PulseAI Logo" class="brand-logo">
+                    <h2>PulseAI</h2>
+                </div>
+                <button class="new-chat-btn" id="new-chat-btn">
+                    <i class="fa-solid fa-plus"></i> New Chat
+                </button>
             </div>
-            <button class="new-chat-btn">
-                <i class="fa-solid fa-plus"></i> New Chat
-            </button>
             <div class="user-profile">
-                <img src="https://ui-avatars.com/api/?name=User&background=8a2be2&color=fff" alt="User Avatar" class="avatar">
+                <div class="avatar">P</div>
                 <span>User Account</span>
             </div>
         </aside>
 
-        <!-- Main Chat Area -->
+        <!-- Main Chat Section -->
         <main class="chat-main">
             <header class="chat-header">
                 <h3>PulseAI Engine <i class="fa-solid fa-chevron-down"></i></h3>
@@ -34,16 +36,27 @@
                 </div>
             </header>
 
-            <!-- Messages Stream -->
+            <!-- Chat Messages Container -->
             <div class="chat-container" id="chat-container">
-                <!-- Dynamic messages will append here -->
+                <!-- Messages will appear here dynamically -->
             </div>
 
-            <!-- Input Controls -->
+            <!-- Bottom Input Section -->
             <div class="input-container">
                 <div class="input-wrapper">
-                    <input type="text" id="user-input" class="message-input" placeholder="Message PulseAI..." autocomplete="off" />
-                    <button id="send-btn" class="send-btn purple-btn">
+                    <input type="text" id="user-input" class="message-input" placeholder="Message PulseAI..." autocomplete="off">
+                    
+                    <!-- Active Models Dropdown (Left of Send Button) -->
+                    <select id="model-select" class="model-dropdown">
+                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Recommended)</option>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Ultra Fast)</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (Long Context)</option>
+                        <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 (Reasoning)</option>
+                        <option value="gemma2-9b-it">Gemma 2 9B (Google)</option>
+                    </select>
+
+                    <!-- Send Button -->
+                    <button id="send-btn" class="send-btn purple-btn" title="Send Message">
                         <i class="fa-solid fa-arrow-up"></i>
                     </button>
                 </div>
