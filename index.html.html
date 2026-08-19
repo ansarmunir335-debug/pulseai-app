@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PulseAI Assistant</title>
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Supabase JS Client (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Authentication Overlay -->
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-box">
+      <div class="auth-header">
+        <h2>PulseAI</h2>
+        <p>Sign in to access your AI Assistant</p>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button id="tab-signin" class="tab-btn active" type="button" onclick="switchTab('signin')">Sign In</button>
+        <button id="tab-signup" class="tab-btn" type="button" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signin-form" class="auth-form">
+        <input type="email" id="signin-email" placeholder="Email address" required />
+        <input type="password" id="signin-password" placeholder="Password" required />
+        <button type="submit" id="btn-signin" class="btn-primary">Sign In</button>
+      </form>
+
+      <!-- Sign Up Form (Hidden by default) -->
+      <form id="signup-form" class="auth-form" style="display: none;">
+        <input type="email" id="signup-email" placeholder="Email address" required />
+        <input type="password" id="signup-password" placeholder="Choose Password (min 6 chars)" minlength="6" required />
+        <button type="submit" id="btn-signup" class="btn-primary">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Application Container -->
+  <div id="app-container" class="app-container" style="display: none;">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <button class="new-chat-btn" id="new-chat-btn" onclick="createNewChat()">
+          <span>+</span> New Chat
+        </button>
+      </div>
+
+      <!-- Chat History List -->
+      <div class="chat-history" id="chat-history-list">
+        <!-- History items dynamically generated here -->
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="chat-main">
+      
+      <!-- Top Header -->
+      <header class="chat-header">
+        <div class="header-title">
+          <h3>PulseAI</h3>
+        </div>
+      </header>
+
+      <!-- Messages Scroll Area -->
+      <div class="chat-box" id="chat-box">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="welcome-screen">
+          <div class="welcome-logo">✨</div>
+          <h2>How can PulseAI help you today?</h2>
+          <p>Select a model, type your prompt, and start generating insights.</p>
+        </div>
+      </div>
+
+      <!-- Input Bar Section -->
+      <div class="input-container">
+        <form id="chat-form" class="input-box" onsubmit="handleChatSubmit(event)">
+          
+          <!-- Dynamic Model Selector -->
+          <select id="model-select" class="model-select">
+            <option value="llama-3.3-70b-versatile" selected>Llama 3.3 70B</option>
+            <option value="llama-3.1-8b-instant">Llama 3.1 8B</option>
+            <option value="mixtral-8x7b-32768">Mixtral 8x7b</option>
+          </select>
+
+          <!-- Input Textarea/Field -->
+          <input 
+            type="text" 
+            id="user-input" 
+            placeholder="Message PulseAI..." 
+            autocomplete="off" 
+            required 
+          />
+
+          <!-- Send Button -->
+          <button type="submit" id="send-btn" class="send-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- Main JavaScript Bundle -->
+  <script src="script.js"></script>
+</body>
+</html>
