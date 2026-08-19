@@ -1,5 +1,5 @@
-// PulseAI - Dynamic Model Groq Integration
-const GROQ_API_KEY = "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"; // <-- Apni Groq API Key (gsk_...) yahan dalein
+// PulseAI - Fixed Alignment & Clean Loader Script
+const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE"; // <-- Apni Groq API Key yahan paste karein
 
 document.addEventListener("DOMContentLoaded", () => {
     const chatInput = document.getElementById("user-input");
@@ -12,68 +12,58 @@ document.addEventListener("DOMContentLoaded", () => {
         const messageText = chatInput.value.trim();
         if (!messageText) return;
 
-        // Selected Model uthayen
-        let selectedModel = modelSelect ? modelSelect.value : "llama-3.3-70b-versatile";
-
-        // User Message Display
+        // 1. User Message Display (Right Aligned)
         appendMessage(messageText, "user");
         chatInput.value = "";
 
-        // Bot Loading Bubble
-        const loadingId = appendMessage("Thinking...", "bot");
+        // 2. AI Temporary "Thinking..." Bubble (Left Aligned)
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "message bot-message thinking-bubble";
+        loadingDiv.innerText = "Thinking...";
+        chatContainer.appendChild(loadingDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        let selectedModel = modelSelect ? modelSelect.value : "llama-3.1-8b-instant";
 
         try {
-            let botReply = await callGroqAPI(messageText, selectedModel);
-            updateMessage(loadingId, botReply);
-        } catch (primaryError) {
-            console.warn(`Primary Model (${selectedModel}) Failed:`, primaryError);
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${GROQ_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    messages: [
+                        { role: "system", content: "You are PulseAI, a helpful assistant. Reply in Roman Urdu or English as requested." },
+                        { role: "user", content: messageText }
+                    ],
+                    model: selectedModel
+                })
+            });
 
-            // Fallback Logic: Agar selected model fail ho to fast backup model use karein
-            const fallbackModel = "llama-3.1-8b-instant";
-            if (selectedModel !== fallbackModel) {
-                try {
-                    updateMessage(loadingId, "Switching to backup engine...");
-                    let fallbackReply = await callGroqAPI(messageText, fallbackModel);
-                    updateMessage(loadingId, fallbackReply);
-                    return;
-                } catch (fallbackError) {
-                    console.error("Fallback Model Error:", fallbackError);
-                }
+            const data = await response.json();
+
+            // 3. Delete "Thinking..." Bubble completely
+            loadingDiv.remove();
+
+            if (!response.ok) {
+                throw new Error(data.error?.message || `Status: ${response.status}`);
             }
-            updateMessage(loadingId, `Error: ${primaryError.message}`);
+
+            // 4. Display AI Response below User message
+            const botReply = data.choices[0]?.message?.content || "No response received.";
+            appendMessage(botReply, "bot");
+
+        } catch (error) {
+            console.error("PulseAI API Error:", error);
+            // Remove loader and show clean error message
+            loadingDiv.remove();
+            appendMessage(`Error: ${error.message}`, "bot");
         }
-    }
-
-    // Groq API Fetch Function
-    async function callGroqAPI(promptText, modelName) {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                messages: [
-                    { role: "system", content: "You are PulseAI, a helpful AI assistant." },
-                    { role: "user", content: promptText }
-                ],
-                model: modelName
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error?.message || `Status: ${response.status}`);
-        }
-
-        return data.choices[0]?.message?.content || "No response received.";
     }
 
     function appendMessage(text, sender) {
         const msgDiv = document.createElement("div");
-        const msgId = "msg-" + Date.now();
-        msgDiv.id = msgId;
         msgDiv.className = `message ${sender}-message`;
         msgDiv.innerText = text;
 
@@ -81,20 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
             chatContainer.appendChild(msgDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        return msgId;
-    }
-
-    function updateMessage(msgId, newText) {
-        const targetMsg = document.getElementById(msgId);
-        if (targetMsg) {
-            targetMsg.innerText = newText;
-        }
     }
 
     // Event Listeners
-    if (sendBtn) {
-        sendBtn.addEventListener("click", sendMessage);
-    }
+    if (sendBtn) sendBtn.addEventListener("click", sendMessage);
 
     if (chatInput) {
         chatInput.addEventListener("keypress", (e) => {
