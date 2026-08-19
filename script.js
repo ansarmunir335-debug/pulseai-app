@@ -1,5 +1,5 @@
 // PulseAI - Fixed Alignment & Clean Loader Script
-const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE"; // <-- Apni Groq API Key yahan paste karein
+const GROQ_API_KEY = "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"; // <-- Apni Groq API Key yahan paste karein
 
 document.addEventListener("DOMContentLoaded", () => {
     const chatInput = document.getElementById("user-input");
